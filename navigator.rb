@@ -6,10 +6,7 @@ load "accounting.rb"
 load "stocker.rb"
 
 class Navigator
-  attr_reader :account, :drinks, :cola, :red_bull, :water
-
   def initialize
-    # @drink = Stocker.new
     @account = Accounting.new
     @drinks = []
     @drinks << @cola = Stocker.new(name: "コーラ", price: 120)

@@ -2,7 +2,7 @@
 # load "accounting.rb"
 
 class Stocker
-  attr_reader :name, :price, :water, :stock
+  attr_reader :name, :price, :stock
 
   # 今回はすべて在庫(stock)5個なので、デフォルト値を5に設定
   def initialize(name:, price:, stock: 5)
@@ -16,12 +16,6 @@ class Stocker
     @stock += num
   end
 end
-
-# 仮
-# def initialize(drink, stock)
-#   @drink = drink
-#   @stock = stock
-# end
 
 # ドリンク情報
 # @drinksをNavigtorからもらう前提
