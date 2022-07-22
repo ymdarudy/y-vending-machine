@@ -1,9 +1,5 @@
-require_relative "accounting.rb"
-require_relative "stocker.rb"
-
-# ↓完成したら不要なので消す
-load "accounting.rb"
-load "stocker.rb"
+require_relative "accounting"
+require_relative "stocker"
 
 class Navigator
   def initialize
@@ -14,26 +10,8 @@ class Navigator
     @drinks << @water = Stocker.new(name: "水", price: 100)
   end
 
-  # n番目のドリンクをnum個補充する
-  # def store_drink(drink, num)
-  #   drink.store(num)
-  # end
-
-  def can_buy?
-    @drinks.can_buy_drink?(@account)
-  end
-
-  def slot_money(money)
-    @account.slot_moneys(money)
-  end
-
-  def buy_drink(drink)
-    drink.store(-1)
-    @account.add_slot_money(-drink.price)
-    @account.add_sales_money(drink.price)
-  end
-
   def select_menu
+    puts "\n何をしますか？"
     puts "1: 商品を確認する\n2: お金を入れる\n3: 立ち去る"
     print " <= "
     gets.to_i
@@ -45,39 +23,36 @@ class Navigator
     end
   end
 
-  # def drink_prices
-  #   @drinks.map(&:price)
-  # end
-
   def select_drink
     puts "\n購入したいドリンクの番号を選択してください。"
-    puts "（投入金額:#{@account.slot_money}円)"
+    puts "（投入金額:#{@account.amount}円)"
     drink_info
     print " <= "
     gets.to_i
   end
 
+  def buy_drink(drink)
+    drink.store(-1)
+    @account.add_amount(-drink.price)
+    @account.add_sales_money(drink.price)
+  end
+
   def start
     puts "\n自販機へようこそ!"
     while true
-      puts "\n何をしますか？"
       menu = select_menu
       while true
         case menu
         when 1
           puts "\n商品はこちら"
           drink_info
-          puts "\n何をしますか？"
           menu = select_menu
         when 2
-          puts "\n何円投入しますか？ ※ 10,50,100,500,1000のいずれか"
-          print " <= "
-          money = gets.to_i
-          slot_money(money)
+          @account.slot_money
           while true
             buyable_drink = []
             @drinks.each do |drink|
-              if @account.slot_money >= drink.price && drink.stock > 0
+              if @account.amount >= drink.price && drink.stock > 0
                 buyable_drink << drink.name
               end
             end
@@ -89,9 +64,7 @@ class Navigator
               break
             when 0
               puts "お金をさらに投入してください。"
-              puts "\n何円投入しますか？ ※ 10,50,100,500,1000のいずれか"
-              print " <= "
-              slot_money(gets.to_i)
+              @account.slot_money
             end
           end
 
@@ -111,17 +84,15 @@ class Navigator
         end
       end
       drink_choice = select_drink
-      num = @drinks.size
       while true
         case drink_choice
-        when (1..num)
+        when (1..@drinks.size)
           drink = @drinks[drink_choice - 1]
           if drink.stock == 0
             puts "\n#{drink.name}は在庫が0です。"
             drink_choice = select_drink
-          elsif @account.slot_money < drink.price
-            puts "\n投入金額が#{drink.price - @account.slot_money}円足りません。"
-            #ここでお金を投入するルートを増やしても良いかも
+          elsif @account.amount < drink.price
+            puts "\n投入金額が#{drink.price - @account.amount}円足りません。"
             drink_choice = select_drink
           else
             puts "\n#{drink.name}をどうぞ！"
@@ -130,7 +101,7 @@ class Navigator
             break
           end
         else
-          puts "\n1〜#{num}の数字を入力してください"
+          puts "\n1〜#{@drinks.size}の数字を入力してください"
           drink_info
           print " <= "
           drink_choice = gets.to_i
