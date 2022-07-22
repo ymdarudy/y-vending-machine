@@ -1,40 +1,32 @@
 class Accounting
-  attr_reader :slot_money, :sales_money
+  attr_reader :amount, :sales_money
 
   MONEY = [10, 50, 100, 500, 1000].freeze
 
   def initialize
-    @slot_money = 0
+    @amount = 0
     @sales_money = 0
   end
 
-  # 現在の投入金額確認
-  def current_slot_money
-    @slot_money
-  end
-
-  # 現在の売上金額確認
-  def current_sales_money
-    @sales_money
-  end
-
   # お金投入。無効なお金の時は、そのままお金を返却
-  def slot_moneys(money)
+  def slot_money
+    puts "\n何円投入しますか？ ※ 10,50,100,500,1000のいずれか"
+    print " <= "
+    money = gets.to_i
     return puts "有効なお金を入れてください" unless MONEY.include?(money)
-    @slot_money += money
-    puts "\n現在の投入金額は#{@slot_money}円です。"
+    @amount += money
+    puts "\n現在の投入金額は#{@amount}円です。"
   end
 
-  # お釣り返却。売上金額も0にリセット。トータル売上金額はそのまま
+  # お釣り返却
   def return_money
-    puts "#{@slot_money}円お返しします。"
-    @slot_money = 0
-    # @sales_money = 0
+    puts "#{@amount}円お返しします。"
+    @amount = 0
   end
 
   # 投入金額追加
-  def add_slot_money(money)
-    @slot_money += money
+  def add_amount(money)
+    @amount += money
   end
 
   # 売上金額追加
